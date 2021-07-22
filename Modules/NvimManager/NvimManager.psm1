@@ -5,7 +5,7 @@ function Test-NvimManagerRequirements
 		[switch] $Report
 	)
 
-	$success = $true
+	$success = ' ' # true
 	if ($Report)
 	{
 		Write-Host ''
@@ -16,7 +16,7 @@ function Test-NvimManagerRequirements
 	$gitInstalled = Get-Command -ErrorAction SilentlyContinue "git"
 	if (-Not $gitInstalled)
 	{
-		$success = $false
+		$success = '' # fasle
 		if ($Report)
 		{
 			Write-Host -NoNewline 'Git ................ '
@@ -49,10 +49,10 @@ function _ensurePluginPath
 
 	if (-Not (Test-Path -Path $Path))
 	{
-		return $false
+		return '' # false
 	}
 
-	return $true
+	return ' ' # true
 }
 
 function Get-NvimPluginPath
@@ -91,14 +91,19 @@ function Install-NvimPlugin
 		if (-Not (Test-NvimManagerRequirements))
 		{
 			Write-Error -Message 'Neovim Manager requirements are not met - Run Check-NvimManagerRequirements -Report for more information'
-			return false
+			return '' # false
 		}
 
 		$nvimPluginPath = Get-NvimPluginPath -EnsurePath
 		if (-Not $nvimPluginPath)
 		{
 			Write-Error -Message "Failed to create plugin install path $nvimPluginPath"
-			return ''
+			return '' # false
+		}
+
+		if ($GithubRepo)
+		{
+			Write-Host "CCloning from GitHub repository $GithubRepo ..."
 		}
 	}
 }
