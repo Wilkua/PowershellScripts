@@ -103,7 +103,9 @@ function Install-NvimPlugin
 
 		if ($GithubRepo)
 		{
-			Write-Host "CCloning from GitHub repository $GithubRepo ..."
+			Write-Host "Cloning from GitHub repository $GithubRepo ..."
+			git -C "$nvimPluginPath" clone -q --recurse-submodules "https://github.com/$GithubRepo"
+			Write-Host "Done cloning plugin"
 		}
 	}
 }
@@ -112,13 +114,24 @@ function Get-NvimInstalledPlugins
 {
 	[CmdletBinding()]
 	param (
-		[switch] $WithPath
+		[switch] $WithPaths
 	)
 
 	$nvimPluginPath = Get-NvimPluginPath -EnsurePath
 	$plugins = Get-ChildItem -Path $nvimPluginPath
 
-	return $plugins
+	if ($WithPaths)
+	{
+		return $plugins
+	}
+
+	$noPathPlugins = @()
+	foreach ($plugin in $plugins)
+	{
+		$noPathPlugins += (Split-Path -Path $plugin -Leaf)
+	}
+
+	return $noPathPlugins
 }
 
 Export-ModuleMember -Function 'Get-NvimInstalledPlugins', 'Install-NvimPlugin', 'Get-NvimPluginPath', 'Test-NvimManagerRequirements'
