@@ -134,5 +134,26 @@ function Get-NvimInstalledPlugins
 	return $noPathPlugins
 }
 
-Export-ModuleMember -Function 'Get-NvimInstalledPlugins', 'Install-NvimPlugin', 'Get-NvimPluginPath', 'Test-NvimManagerRequirements'
+function Uninstall-NvimPlugin
+{
+    [CmdletBinding()]
+    param(
+        [Parameter(position=0)]
+        [string] $PluginName
+    )
+
+    process
+    {
+        $nvimPluginPath = Get-NvimPluginPath -EnsurePath
+        if (-Not (Test-Path -Path "$nvimPluginPath\$PluginName"))
+        {
+            Write-Error -Message "Plugin '$PluginName' is not installed"
+            return '' # false
+        }
+
+        return Remove-Item -Path "$nvimPluginPath\$PluginName" -Force -Recurse
+    }
+}
+
+Export-ModuleMember -Function 'Get-NvimInstalledPlugins', 'Install-NvimPlugin', 'Uninstall-NvimPlugin', 'Get-NvimPluginPath', 'Test-NvimManagerRequirements'
 
